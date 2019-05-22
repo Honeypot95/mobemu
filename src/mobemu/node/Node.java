@@ -70,6 +70,7 @@ public abstract class Node {
     protected static final int DAYS_IN_WEEK = 7; // total number of days in a week
     protected static final int MILLIS_IN_DAY = 1000 * 60 * 60 * 24; // total number of milliseconds in a day
 
+    protected long seed;
     /**
      * Constructor for the {@link Node} class.
      *
@@ -85,6 +86,10 @@ public abstract class Node {
      * @param traceEnd timestamp of the end of the trace
      */
     public Node(int id, int nodes, Context context, boolean[] socialNetwork, int dataMemorySize, int exchangeHistorySize, long seed, long traceStart, long traceEnd) {
+
+        // we save the seed we started with, for reproducibility purposes.
+        this.seed = seed;
+
         if (deliveryRandom == null) {
             deliveryRandom = new Random(seed);
         }
@@ -474,6 +479,10 @@ public abstract class Node {
     public Message generateMessage(Message message) {
         ownMessages.add(message);
         return message;
+    }
+
+    public long getSeed() {
+        return this.seed;
     }
 
     /**
