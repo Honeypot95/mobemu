@@ -13,10 +13,13 @@ import mobemu.algorithms.SENSE;
 import mobemu.node.Message;
 import mobemu.node.Node;
 import mobemu.node.Stats;
-import mobemu.parsers.SocialBlueConn;
-import mobemu.parsers.StAndrews;
-import mobemu.parsers.UPB;
+import mobemu.parsers.*;
 import mobemu.trace.Parser;
+
+/**
+ * External libraries
+ */
+import mjson.Json;
 
 /**
  * Main class for MobEmu.
@@ -29,7 +32,7 @@ public class MobEmu {
 
         String filename = args[0]; // The first argument is the filename to write to. TODO: This may change.
         System.out.println("Starting mobemu");
-        Parser parser = traceFactory("SocialBlueConn");
+        Parser parser = traceFactory("UPB2012");
 
         System.out.println("initialize Epidemic nodes");
         long seed = 0;
@@ -37,7 +40,7 @@ public class MobEmu {
         Node[] nodes = new Node[parser.getNodesNumber()];
         for (int i = 0; i < nodes.length; i++) {
             nodes[i] = new SENSE(i, parser.getContextData().get(i), parser.getSocialNetwork()[i],
-                    10000, 100, seed, parser.getTraceData().getStartTime(), parser.getTraceData().getEndTime(), false, nodes);
+                    10000, 100, seed, parser.getTraceData().getStartTime(), parser.getTraceData().getEndTime(), true, nodes);
         }
 
         System.out.println("run the trace");
@@ -111,7 +114,17 @@ public class MobEmu {
             return new StAndrews();
         } else if (tracename == "SocialBlueConn") {
             return new SocialBlueConn();
+        } else if (tracename == "Sigcomm") {
+            return new Sigcomm();
+        } else if (tracename == "NUS") {
+            return new NUS();
+        } else if (tracename == "NCCU") {
+            return new NCCU();
+        } else if (tracename == "HCMM") {
+            return new GeoLife();
         }
+
+        // TODO: There are still some traces not here, those need to be further analysed
         throw new Exception("Trace" + tracename + " not implemented");
     }
 }
