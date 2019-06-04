@@ -33,11 +33,21 @@ public class MobEmu {
 
     public static void main(String[] args) throws Exception {
 
-        String filename = args[0]; // The first argument is the filename to write to. TODO: This may change.
-        System.out.println("Starting mobemu");
-        Parser parser = traceFactory("UPB2012");
+        String input = args[0]; // First argument is the input file
+        String output = args[1]; // Second argument is the output file
 
-        System.out.println("initialize Epidemic nodes");
+        // Parse the input file to json object
+        Json runs = readInputFile(input);
+        System.out.println("Configuration to run: ");
+        System.out.println(runs);
+        // Read the first trace
+        String tracename = runs.at("runs").at(0).at("trace").asString();
+        System.out.println(tracename);
+
+        System.out.println("Starting mobemu");
+        Parser parser = traceFactory(tracename);
+
+        System.out.println("initialize SENSE nodes");
         long seed = 0;
         boolean dissemination = false;
         Node[] nodes = new Node[parser.getNodesNumber()];
@@ -49,7 +59,7 @@ public class MobEmu {
         System.out.println("run the trace");
         List<Message> messages = Node.runTrace(nodes, parser.getTraceData(), false, dissemination, seed);
 
-        writeStatsToFile(filename, parser, messages, nodes);
+        writeStatsToFile(output, parser, messages, nodes);
         System.out.println("Finishing mobemu");
     }
 
@@ -107,28 +117,28 @@ public class MobEmu {
      * @param tracename
      */
     public static Parser traceFactory(String tracename) throws Exception {
-        if (tracename == "UPB2011") {
+        if (tracename.equals("UPB2011")) {
             return new UPB(UPB.UpbTrace.UPB2011);
-        } else if (tracename == "UPB2012") {
+        } else if (tracename.equals("UPB2012")) {
             return new UPB(UPB.UpbTrace.UPB2012);
-        } else if (tracename == "UPB2015") {
+        } else if (tracename.equals("UPB2015")) {
             return new UPB(UPB.UpbTrace.UPB2015);
-        } else if (tracename == "StAndrews") {
+        } else if (tracename.equals("StAndrews")) {
             return new StAndrews();
-        } else if (tracename == "SocialBlueConn") {
+        } else if (tracename.equals("SocialBlueConn")) {
             return new SocialBlueConn();
-        } else if (tracename == "Sigcomm") {
+        } else if (tracename.equals("Sigcomm")) {
             return new Sigcomm();
-        } else if (tracename == "NUS") {
+        } else if (tracename.equals("NUS")) {
             return new NUS();
-        } else if (tracename == "NCCU") {
+        } else if (tracename.equals("NCCU")) {
             return new NCCU();
-        } else if (tracename == "HCMM") {
+        } else if (tracename.equals("GeoLife")) {
             return new GeoLife();
         }
 
         // TODO: There are still some traces not here, those need to be further analysed
-        throw new Exception("Trace" + tracename + " not implemented");
+        throw new Exception("Trace " + tracename + " not implemented");
     }
 
     /**
@@ -139,4 +149,5 @@ public class MobEmu {
     public static Json readInputFile(String filename) throws IOException {
         return Json.read(new String(Files.readAllBytes(Paths.get(filename)), "UTF-8"));
     }
+
 }
