@@ -6,7 +6,10 @@ package mobemu;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import mobemu.algorithms.Epidemic;
 import mobemu.algorithms.SENSE;
@@ -126,5 +129,14 @@ public class MobEmu {
 
         // TODO: There are still some traces not here, those need to be further analysed
         throw new Exception("Trace" + tracename + " not implemented");
+    }
+
+    /**
+     * Parses the filename to a json object. Filename has to be the path of a UTF-8 encoded file.
+     * @param filename
+     * @return
+     */
+    public static Json readInputFile(String filename) throws IOException {
+        return Json.read(new String(Files.readAllBytes(Paths.get(filename)), "UTF-8"));
     }
 }
